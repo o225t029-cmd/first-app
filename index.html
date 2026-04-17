@@ -1,1 +1,223 @@
+import React, { useState, useEffect } from 'react';
+import { Star, Sparkles, Heart, Ticket, Music, RefreshCw, Gift } from 'lucide-react';
 
+// --- 占い用のデータ ---
+const fortunes = [
+  { level: '超大吉', color: 'text-pink-600', bg: 'bg-pink-100', stars: 5 },
+  { level: '大吉', color: 'text-red-500', bg: 'bg-red-50', stars: 4 },
+  { level: '中吉', color: 'text-orange-500', bg: 'bg-orange-50', stars: 3 },
+  { level: '小吉', color: 'text-yellow-600', bg: 'bg-yellow-50', stars: 2 },
+  { level: '吉', color: 'text-green-600', bg: 'bg-green-50', stars: 2 },
+];
+
+const oshiMessages = [
+  "自名義が大活躍の予感！徳を積んで備えましょう。",
+  "不意打ちで推しからの供給（SNS更新や動画）があるかも！？",
+  "過去のライブDVDを見返すと、推しの新たな魅力に気づけそう。",
+  "推しと同じものを食べたり飲んだりすると運気アップ！",
+  "ランダムグッズで推しを一発自引きできる確率が高まっています！",
+  "街中やお店で偶然、推しの曲が流れてきそう♪",
+  "ファンサをもらう夢を見るかも。うちわのネタを考えておいて。",
+];
+
+const luckyItems = [
+  "お気に入りのアクスタ",
+  "メンカラの小物やアクセサリー",
+  "ツアーTシャツ（部屋着でもOK!）",
+  "推しが表紙の雑誌",
+  "公式写真（お気に入りの1枚）",
+  "ペンライト（たまには光らせてみて！）",
+  "現場で使っている双眼鏡",
+];
+
+const luckyColors = [
+  "赤", "青", "黄", "緑", "ピンク", "紫", "オレンジ", "黒", "白"
+];
+
+export default function App() {
+  const [view, setView] = useState('home'); // 'home', 'drawing', 'result'
+  const [result, setResult] = useState(null);
+
+  // おみくじを引く処理
+  const drawFortune = () => {
+    setView('drawing');
+    
+    // 2秒後に結果を表示
+    setTimeout(() => {
+      const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+      const randomMessage = oshiMessages[Math.floor(Math.random() * oshiMessages.length)];
+      const randomItem = luckyItems[Math.floor(Math.random() * luckyItems.length)];
+      const randomColor = luckyColors[Math.floor(Math.random() * luckyColors.length)];
+
+      setResult({
+        ...randomFortune,
+        message: randomMessage,
+        item: randomItem,
+        color: randomColor,
+      });
+      setView('result');
+    }, 2000);
+  };
+
+  const resetFortune = () => {
+    setView('home');
+    setResult(null);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50 flex flex-col font-sans text-gray-800">
+      {/* Header */}
+      <header className="bg-white/80 backdrop-blur-md sticky top-0 z-10 p-4 shadow-sm border-b border-pink-100 flex items-center justify-center">
+        <Sparkles className="w-5 h-5 text-pink-500 mr-2" />
+        <h1 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-purple-500">
+          今日の推し活おみくじ
+        </h1>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-grow flex flex-col items-center justify-center p-6 max-w-md mx-auto w-full">
+        
+        {/* HOME VIEW */}
+        {view === 'home' && (
+          <div className="flex flex-col items-center animate-in fade-in zoom-in duration-500">
+            <div className="relative mb-8">
+              {/* おみくじ箱のイラスト代わりのデザイン */}
+              <div className="w-40 h-48 bg-gradient-to-b from-red-500 to-red-600 rounded-lg shadow-xl border-4 border-red-700 flex items-center justify-center relative overflow-hidden">
+                <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
+                <div className="bg-white px-4 py-8 rounded-sm shadow-inner transform -rotate-3 border-2 border-gray-200">
+                  <span className="text-2xl font-black text-gray-800 writing-vertical-rl tracking-widest">
+                    御神籤
+                  </span>
+                </div>
+              </div>
+              <Sparkles className="absolute -top-4 -right-4 w-10 h-10 text-yellow-400 animate-pulse" />
+              <Heart className="absolute -bottom-4 -left-4 w-8 h-8 text-pink-400 animate-bounce" />
+            </div>
+
+            <p className="text-center text-gray-600 mb-8 font-medium">
+              今日のあなたの<br/>推し事運を占いましょう！
+            </p>
+
+            <button
+              onClick={drawFortune}
+              className="group relative px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-full font-bold text-lg shadow-lg hover:shadow-xl transition-all active:scale-95 overflow-hidden"
+            >
+              <div className="absolute inset-0 w-full h-full bg-white/20 scale-0 group-hover:scale-100 rounded-full transition-transform duration-300 ease-out"></div>
+              <span className="relative flex items-center justify-center">
+                おみくじを引く
+                <Star className="w-5 h-5 ml-2 fill-current" />
+              </span>
+            </button>
+          </div>
+        )}
+
+        {/* DRAWING VIEW (Animation) */}
+        {view === 'drawing' && (
+          <div className="flex flex-col items-center justify-center animate-in fade-in duration-300">
+            <div className="relative w-32 h-32 mb-6 animate-spin-slow">
+              <div className="absolute inset-0 rounded-full border-4 border-pink-200 border-t-pink-500 animate-spin"></div>
+              <div className="absolute inset-2 rounded-full border-4 border-purple-200 border-b-purple-500 animate-spin-reverse"></div>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Sparkles className="w-10 h-10 text-pink-500 animate-pulse" />
+              </div>
+            </div>
+            <p className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 animate-pulse">
+              推しへの愛を込めて...
+            </p>
+          </div>
+        )}
+
+        {/* RESULT VIEW */}
+        {view === 'result' && result && (
+          <div className="w-full flex flex-col items-center animate-in zoom-in-95 fade-in duration-500 pb-10">
+            
+            {/* 結果のメイン部分 */}
+            <div className={`w-full bg-white rounded-3xl shadow-xl overflow-hidden mb-6 border-2 border-white ring-4 ring-opacity-50 ${result.bg.replace('bg-', 'ring-')}`}>
+              <div className={`${result.bg} p-6 text-center border-b border-white/50 relative`}>
+                <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-30 pointer-events-none">
+                  {/* キラキラ背景装飾 */}
+                  <div className="absolute top-2 left-4 w-4 h-4 bg-white rounded-full mix-blend-overlay"></div>
+                  <div className="absolute bottom-4 right-8 w-6 h-6 bg-white rounded-full mix-blend-overlay"></div>
+                </div>
+                
+                <p className="text-sm font-bold text-gray-500 mb-2">本日の運勢</p>
+                <h2 className={`text-6xl font-black ${result.color} tracking-widest drop-shadow-sm`}>
+                  {result.level}
+                </h2>
+                
+                <div className="flex justify-center mt-4 space-x-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star 
+                      key={i} 
+                      className={`w-6 h-6 ${i < result.stars ? 'text-yellow-400 fill-current' : 'text-gray-200'}`} 
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="p-6 space-y-6">
+                {/* 推し事運メッセージ */}
+                <div>
+                  <h3 className="flex items-center text-sm font-bold text-pink-500 mb-2">
+                    <Heart className="w-4 h-4 mr-1" /> 推し事運
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed bg-pink-50 p-4 rounded-xl text-sm">
+                    {result.message}
+                  </p>
+                </div>
+
+                {/* ラッキーアイテム＆カラー */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-gray-50 p-4 rounded-xl">
+                    <h3 className="flex items-center text-xs font-bold text-gray-500 mb-1">
+                      <Gift className="w-3 h-3 mr-1" /> ラッキーアイテム
+                    </h3>
+                    <p className="text-sm font-bold text-gray-800">{result.item}</p>
+                  </div>
+                  
+                  <div className="bg-gray-50 p-4 rounded-xl">
+                    <h3 className="flex items-center text-xs font-bold text-gray-500 mb-1">
+                      <Ticket className="w-3 h-3 mr-1" /> ラッキーカラー
+                    </h3>
+                    <p className="text-sm font-bold text-gray-800">{result.color}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* もう一度引くボタン */}
+            <button
+              onClick={resetFortune}
+              className="flex items-center justify-center px-6 py-3 bg-white text-gray-600 rounded-full font-bold text-sm shadow-md hover:bg-gray-50 transition border border-gray-100"
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              明日も引いてね！ (引き直し)
+            </button>
+          </div>
+        )}
+      </main>
+
+      {/* Tailwind用カスタムアニメーション定義 (インラインスタイルで追加) */}
+      <style dangerouslySetInnerHTML={{__html: `
+        .writing-vertical-rl {
+          writing-mode: vertical-rl;
+          text-orientation: upright;
+        }
+        @keyframes spin-slow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes spin-reverse {
+          from { transform: rotate(360deg); }
+          to { transform: rotate(0deg); }
+        }
+        .animate-spin-slow {
+          animation: spin-slow 3s linear infinite;
+        }
+        .animate-spin-reverse {
+          animation: spin-reverse 2s linear infinite;
+        }
+      `}} />
+    </div>
+  );
+}
